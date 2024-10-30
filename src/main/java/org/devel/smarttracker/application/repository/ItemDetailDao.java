@@ -17,7 +17,6 @@ public class ItemDetailDao extends AbstractDao<ItemDetail, Long> {
         super(ItemDetail.class, entityManager);
     }
 
-
     public List<ItemDetail> findAllByItemId(Long itemId, Integer limit) {
         JPAQuery<ItemDetail> sql = getQuery()
                 .selectFrom(itemDetail)
@@ -28,7 +27,6 @@ public class ItemDetailDao extends AbstractDao<ItemDetail, Long> {
         }
         return sql.fetch();
     }
-
 
     public void deleteAllByItemId(Long itemId) {
         getQuery()

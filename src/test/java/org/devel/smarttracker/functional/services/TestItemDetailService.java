@@ -1,8 +1,8 @@
-package org.devel.smarttracker.services;
+package org.devel.smarttracker.functional.services;
 
 
 import javassist.NotFoundException;
-import org.devel.smarttracker.AbstractFunctionalTest;
+import org.devel.smarttracker.functional.AbstractFunctionalTest;
 import org.devel.smarttracker.application.dto.ItemDetailDto;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.entities.ItemDetail;

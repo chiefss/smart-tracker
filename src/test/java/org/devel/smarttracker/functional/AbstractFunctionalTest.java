@@ -1,5 +1,6 @@
-package org.devel.smarttracker;
+package org.devel.smarttracker.functional;
 
+import org.devel.smarttracker.AbstractBaseTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 

@@ -1,7 +1,7 @@
-package org.devel.smarttracker.dao;
+package org.devel.smarttracker.integration.dao;
 
 
-import org.devel.smarttracker.AbstractFunctionalSpringBootTest;
+import org.devel.smarttracker.integration.AbstractIntegrationSpringBootTest;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.repository.ItemDao;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-class TestItemDao extends AbstractFunctionalSpringBootTest {
+class TestItemDao extends AbstractIntegrationSpringBootTest {
 
     private final ItemDao itemDao;
 

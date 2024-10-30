@@ -1,4 +1,4 @@
-package org.devel.smarttracker;
+package org.devel.smarttracker.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

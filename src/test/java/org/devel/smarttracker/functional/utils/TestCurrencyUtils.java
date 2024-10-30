@@ -1,15 +1,12 @@
-package org.devel.smarttracker.utils;
+package org.devel.smarttracker.functional.utils;
 
-
-import org.devel.smarttracker.AbstractFunctionalTest;
+import org.devel.smarttracker.functional.AbstractFunctionalTest;
 import org.devel.smarttracker.application.utils.CurrencyUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 
-@Sql("/db.tests.data/init.sql")
 class TestCurrencyUtils extends AbstractFunctionalTest {
 
     @Test

@@ -1,4 +1,4 @@
-package org.devel.smarttracker;
+package org.devel.smarttracker.functional;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

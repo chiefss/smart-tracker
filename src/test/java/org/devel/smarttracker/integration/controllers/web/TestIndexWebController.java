@@ -1,6 +1,6 @@
-package org.devel.smarttracker.controllers.web;
+package org.devel.smarttracker.integration.controllers.web;
 
-import org.devel.smarttracker.AbstractIntegrationMvcTest;
+import org.devel.smarttracker.integration.AbstractIntegrationMvcTest;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.entities.ItemDetail;
 import org.devel.smarttracker.application.repository.ItemDao;

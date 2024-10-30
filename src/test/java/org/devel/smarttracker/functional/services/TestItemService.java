@@ -1,7 +1,7 @@
-package org.devel.smarttracker.services;
+package org.devel.smarttracker.functional.services;
 
 
-import org.devel.smarttracker.AbstractFunctionalTest;
+import org.devel.smarttracker.functional.AbstractFunctionalTest;
 import org.devel.smarttracker.application.dto.ItemDto;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.repository.ItemDao;

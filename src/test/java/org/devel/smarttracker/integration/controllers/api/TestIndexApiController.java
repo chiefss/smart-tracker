@@ -1,9 +1,9 @@
-package org.devel.smarttracker.controllers.api;
+package org.devel.smarttracker.integration.controllers.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.devel.smarttracker.AbstractIntegrationMvcTest;
+import org.devel.smarttracker.integration.AbstractIntegrationMvcTest;
 import org.devel.smarttracker.application.dto.ItemDetailDto;
 import org.devel.smarttracker.application.utils.Defines;
 import org.junit.jupiter.api.Assertions;

@@ -1,7 +1,7 @@
-package org.devel.smarttracker.dao;
+package org.devel.smarttracker.integration.dao;
 
 
-import org.devel.smarttracker.AbstractFunctionalSpringBootTest;
+import org.devel.smarttracker.integration.AbstractIntegrationSpringBootTest;
 import org.devel.smarttracker.application.entities.ItemDetail;
 import org.devel.smarttracker.application.repository.ItemDetailDao;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
 
-class TestItemDetailDao extends AbstractFunctionalSpringBootTest {
+class TestItemDetailDao extends AbstractIntegrationSpringBootTest {
 
     private final ItemDetailDao itemDetailDao;
 
