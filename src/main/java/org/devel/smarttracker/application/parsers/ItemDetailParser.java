@@ -4,6 +4,7 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.devel.smarttracker.application.configuration.AppParserConnectionHeadersConfig;
+import org.devel.smarttracker.application.configuration.AppParserCronConfig;
 import org.devel.smarttracker.application.dto.ItemDetailParserResultDto;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.entities.ItemDetail;
@@ -39,10 +40,12 @@ public class ItemDetailParser {
     private final ItemDetailService itemDetailService;
     private final AppParserConnectionHeadersConfig appParserConnectionHeadersConfig;
 
+    private final AppParserCronConfig appParserCronConfig;
+
     public List<ItemDetailParserResultDto> parseAll() {
         List<Item> items = itemDao.findAllActivated();
         List<ItemDetailParserResultDto> itemDetailParserResultDtos = new ArrayList<>();
-        ExecutorService pool = Executors.newFixedThreadPool(Defines.PARSER_MAX_THREADS);
+        ExecutorService pool = Executors.newFixedThreadPool(appParserCronConfig.getMaxThread());
         List<Callable<Optional<ItemDetailParserResultDto>>> tasks = new ArrayList<>();
         for (Item item : items) {
             Callable<Optional<ItemDetailParserResultDto>> parserTask = createParserTask(item);

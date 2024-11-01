@@ -112,6 +112,19 @@ app:
 ```
 
 
+#### Parser settings:
+
+```bash
+app:
+  parser:
+    cron:
+      enabled: true
+      max-thread: 4
+      initial-timeout: 3600000  # cron delay. 3600000 - one hour
+      interval: 43200000
+```
+
+
 Simply run:
 ------------
 
