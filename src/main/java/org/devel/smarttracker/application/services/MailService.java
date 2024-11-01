@@ -1,7 +1,7 @@
 package org.devel.smarttracker.application.services;
 
+import lombok.RequiredArgsConstructor;
 import org.devel.smarttracker.application.configuration.AppMailConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.Properties;
 
 @Service
+@RequiredArgsConstructor
 public class MailService {
 
-    @Autowired
-    private AppMailConfig appMailConfig;
+    private final AppMailConfig appMailConfig;
 
     public void sendAdmin(String subject, String body) {
         this.sendMail(subject, body, appMailConfig.getAdmin());

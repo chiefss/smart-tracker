@@ -1,13 +1,16 @@
 package org.devel.smarttracker.application.parsers;
 
 import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.devel.smarttracker.application.configuration.AppParserConnectionHeadersConfig;
 import org.devel.smarttracker.application.dto.ItemDetailParserResultDto;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.entities.ItemDetail;
+import org.devel.smarttracker.application.factories.ItemDetailFactory;
+import org.devel.smarttracker.application.mappers.ItemDetailParserResultDtoMapper;
+import org.devel.smarttracker.application.repository.ItemDao;
 import org.devel.smarttracker.application.services.ItemDetailService;
-import org.devel.smarttracker.application.services.ItemService;
 import org.devel.smarttracker.application.utils.Defines;
 import org.devel.smarttracker.application.utils.CurrencyUtils;
 import org.jsoup.Connection;
@@ -15,7 +18,7 @@ import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,28 +31,18 @@ import java.util.concurrent.*;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class ItemDetailParser {
 
-    @Autowired
-    private AppParserConnectionHeadersConfig appParserConnectionHeadersConfig;
-
-    public static final int MAX_THREADS = 8;
-
     public static final String SELECTOR_SPLIT_DELIMITER = "\\|";
-
-    private final ItemService itemService;
-
+    private final ItemDao itemDao;
     private final ItemDetailService itemDetailService;
-
-    public ItemDetailParser(ItemService itemService, ItemDetailService itemDetailService) {
-        this.itemService = itemService;
-        this.itemDetailService = itemDetailService;
-    }
+    private final AppParserConnectionHeadersConfig appParserConnectionHeadersConfig;
 
     public List<ItemDetailParserResultDto> parseAll() {
-        List<Item> items = itemService.findAll(true);
+        List<Item> items = itemDao.findAllActivated();
         List<ItemDetailParserResultDto> itemDetailParserResultDtos = new ArrayList<>();
-        ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
+        ExecutorService pool = Executors.newFixedThreadPool(Defines.PARSER_MAX_THREADS);
         List<Callable<Optional<ItemDetailParserResultDto>>> tasks = new ArrayList<>();
         for (Item item : items) {
             Callable<Optional<ItemDetailParserResultDto>> parserTask = createParserTask(item);
@@ -74,7 +67,7 @@ public class ItemDetailParser {
         Document itemDocument = loadContent(itemUrl);
         try {
             Double itemDetailValue = findItemDetailValueBySelectors(itemDocument, item.getSelector());
-            ItemDetail itemDetail = buildItemDetail(item, itemDetailValue);
+            ItemDetail itemDetail = ItemDetailFactory.create(item, itemDetailValue);
             if (isActualValue(itemDetail)) {
                 return Optional.of(itemDetail);
             }
@@ -98,15 +91,8 @@ public class ItemDetailParser {
         }
     }
 
-    private ItemDetail buildItemDetail(Item item, Double value) {
-        ItemDetail itemDetail = new ItemDetail();
-        itemDetail.setItem(item);
-        itemDetail.setValue(value);
-        return itemDetail;
-    }
-
     private boolean isActualValue(ItemDetail itemDetail) {
-        List<ItemDetail> itemDetailList = itemDetailService.findLast(itemDetail.getItem());
+        List<ItemDetail> itemDetailList = itemDetailService.findAll(itemDetail.getItem().getId(), 2);
         if (itemDetailList.isEmpty()) {
             return true;
         }
@@ -150,7 +136,7 @@ public class ItemDetailParser {
         Connection connection = getConnection(url);
         Connection.Response response = connection.execute();
         int statusCode = response.statusCode();
-        if (statusCode == 200) {
+        if (statusCode == HttpStatus.OK.value()) {
             return response.parse();
         }
         throw new HttpStatusException("Cannot load page", statusCode, url.toString());
@@ -164,7 +150,7 @@ public class ItemDetailParser {
                 .header("Accept", appParserConnectionHeadersConfig.getAccept())
                 .header("Accept-Language", appParserConnectionHeadersConfig.getAcceptLanguage())
                 .header("Accept-Encoding", appParserConnectionHeadersConfig.getAcceptEncoding())
-                .header("DNT", appParserConnectionHeadersConfig.getDnt())
+                .header("DNT", String.valueOf(appParserConnectionHeadersConfig.getDnt()))
                 .header("Connection", appParserConnectionHeadersConfig.getConnection())
                 .header("Upgrade-Insecure-Requests", appParserConnectionHeadersConfig.getUpgradeInsecureRequests())
                 .header("Pragma", appParserConnectionHeadersConfig.getPragma())
@@ -176,10 +162,10 @@ public class ItemDetailParser {
             try {
                 Optional<ItemDetail> itemDetailOptional = parse(item);
                 if (itemDetailOptional.isPresent()) {
-                    return Optional.of(new ItemDetailParserResultDto(item, itemDetailOptional.get(), true, null));
+                    return Optional.of(ItemDetailParserResultDtoMapper.toDto(item, itemDetailOptional.get(), true, null));
                 }
             } catch (NotFoundException | IOException e) {
-                return Optional.of(new ItemDetailParserResultDto(item, null, false, e.getMessage()));
+                return Optional.of(ItemDetailParserResultDtoMapper.toDto(item, null, false, e.getMessage()));
             }
             return Optional.empty();
         };

@@ -8,7 +8,7 @@
 
         <RollingFile name="RollingFile"
                      fileName="./logs/application.log"
-                     filePattern="./logs/$${date:yyyy-MM}/application-%d{-dd-MM-yyyy}-%i.log.gz">
+                     filePattern="./logs/${date:yyyy-MM}/application-%d{dd-MM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
@@ -21,6 +21,10 @@
     </Appenders>
 
     <Loggers>
+        <Logger name="org.hibernate.orm.jdbc.bind" additivity="false" level="TRACE">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
         <Logger name="org.devel.smarttracker.SmartTrackerApplication" additivity="false" level="info">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />

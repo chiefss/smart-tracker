@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ItemDto {
+public class ItemUpdateDto {
 
     private Long id;
     private String name;

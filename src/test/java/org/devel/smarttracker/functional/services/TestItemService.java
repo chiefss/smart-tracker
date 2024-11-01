@@ -1,8 +1,9 @@
 package org.devel.smarttracker.functional.services;
 
 
+import org.devel.smarttracker.application.dto.ItemCreateDto;
+import org.devel.smarttracker.application.dto.ItemUpdateDto;
 import org.devel.smarttracker.functional.AbstractFunctionalTest;
-import org.devel.smarttracker.application.dto.ItemDto;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.repository.ItemDao;
 import org.devel.smarttracker.application.repository.ItemDetailDao;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -33,31 +33,11 @@ class TestItemService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testFindAll() {
-        when(itemDao.findAllByActivated(false))
-                .thenReturn(List.of());
-
-        itemService.findAll(false);
-
-        verify(itemDao, times(1)).findAllByActivated(false);
-    }
-
-    @Test
-    void testFindAllActivatedOnly() {
-        when(itemDao.findAllByActivated(true))
-                .thenReturn(List.of());
-
-        itemService.findAll(true);
-
-        verify(itemDao, times(1)).findAllByActivated(true);
-    }
-
-    @Test
     void testFind() throws NotFoundException {
         when(itemDao.findById(1L))
                 .thenReturn(Optional.of(new Item()));
 
-        itemService.find(1L);
+        itemService.findById(1L);
 
         verify(itemDao, times(1)).findById(1L);
     }
@@ -67,16 +47,16 @@ class TestItemService extends AbstractFunctionalTest {
         when(itemDao.findById(1000L))
                 .thenReturn(Optional.empty());
 
-        Assertions.assertThrows(NotFoundException.class, () -> itemService.find(1000L));
+        Assertions.assertThrows(NotFoundException.class, () -> itemService.findById(1000L));
 
         verify(itemDao, times(1)).findById(1000L);
     }
 
     @Test
     void testCreate() {
-        ItemDto itemDto = new ItemDto(null, "name 6", "url 6", "selector 6", "break selector 6");
+        ItemCreateDto itemCreateDto = new ItemCreateDto("name 6", "url 6", "selector 6", "break selector 6");
 
-        itemService.create(itemDto);
+        itemService.create(itemCreateDto);
 
         ArgumentCaptor<Item> requestCaptorItem = ArgumentCaptor.forClass(Item.class);
         verify(itemDao, times(1)).save(requestCaptorItem.capture());
@@ -90,13 +70,13 @@ class TestItemService extends AbstractFunctionalTest {
     @Test
     void testUpdate() throws NotFoundException {
         Long itemId = 2L;
-        ItemDto itemDto = new ItemDto(itemId, "name 2-2", "url 2-2", "selector 2-2", "break selector 2-2");
+        ItemUpdateDto itemUpdateDto = new ItemUpdateDto(itemId, "name 2-2", "url 2-2", "selector 2-2", "break selector 2-2");
         Item item = new Item("name 2", "url 2", "selector 2", "break selector 2");
         item.setId(itemId);
         when(itemDao.findById(any()))
                 .thenReturn(Optional.of(item));
 
-        itemService.update(itemDto);
+        itemService.update(itemUpdateDto);
 
         ArgumentCaptor<Item> requestCaptorItem = ArgumentCaptor.forClass(Item.class);
         verify(itemDao, times(1)).save(requestCaptorItem.capture());
@@ -112,9 +92,9 @@ class TestItemService extends AbstractFunctionalTest {
         when(itemDao.findById(any()))
                 .thenReturn(Optional.empty());
         Long expectedId = 1000L;
-        ItemDto itemDto = new ItemDto(expectedId, "name 2-2", "url 2-2", "selector 2-2", "break selector 2-2");
+        ItemUpdateDto itemUpdateDto = new ItemUpdateDto(expectedId, "name 2-2", "url 2-2", "selector 2-2", "break selector 2-2");
 
-        Assertions.assertThrows(NotFoundException.class, () -> itemService.update(itemDto));
+        Assertions.assertThrows(NotFoundException.class, () -> itemService.update(itemUpdateDto));
     }
 
     @Test

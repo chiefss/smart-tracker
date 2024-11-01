@@ -61,6 +61,7 @@ app:
   parser:
     cron:
       enabled: true
+      max-thread: 6
       initial-timeout: 3600000  # cron delay. 3600000 - one hour
       interval: 43200000
     connection:

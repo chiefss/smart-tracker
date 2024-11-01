@@ -10,8 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EmailMessage {
+public class ItemCreateDto {
 
-    private String subject;
-    private String body;
+    private String name;
+    private String url;
+    private String selector;
+    private String breakSelector;
 }

@@ -18,14 +18,14 @@ public class ItemDetailDao extends AbstractDao<ItemDetail, Long> {
     }
 
     public List<ItemDetail> findAllByItemId(Long itemId, Integer limit) {
-        JPAQuery<ItemDetail> sql = getQuery()
+        JPAQuery<ItemDetail> sqlQuery = getQuery()
                 .selectFrom(itemDetail)
                 .where(itemDetail.item.id.eq(itemId))
                 .orderBy(itemDetail.createdAt.desc());
         if (limit != null) {
-            sql.limit(limit);
+            sqlQuery.limit(limit);
         }
-        return sql.fetch();
+        return sqlQuery.fetch();
     }
 
     public void deleteAllByItemId(Long itemId) {

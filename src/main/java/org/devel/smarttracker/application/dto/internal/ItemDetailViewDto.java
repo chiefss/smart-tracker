@@ -1,4 +1,4 @@
-package org.devel.smarttracker.application.dto;
+package org.devel.smarttracker.application.dto.internal;
 
 
 import lombok.Getter;
@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ItemDetailDtoView {
+public class ItemDetailViewDto {
 
     private Long id;
     private Double value;
     private String formattedValue;
     private LocalDateTime createdAt;
 
-    public ItemDetailDtoView(Long id, Double value, LocalDateTime createdAt) {
+    public ItemDetailViewDto(Long id, Double value, LocalDateTime createdAt) {
         this.id = id;
         this.value = value;
         this.createdAt = createdAt;

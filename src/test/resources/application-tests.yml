@@ -4,7 +4,7 @@ spring:
   jpa:
     show-sql: true
   datasource:
-      url: "jdbc:sqlite::memory:"
+    url: "jdbc:sqlite::memory:"
   liquibase:
     change-log: classpath:db/changelog/db.changelog-tests.yml
 

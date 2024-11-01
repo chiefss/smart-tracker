@@ -15,7 +15,7 @@ public class AppParserConnectionHeadersConfig {
     private String accept;
     private String acceptLanguage;
     private String acceptEncoding;
-    private String dnt;
+    private int dnt;
     private String connection;
     private String upgradeInsecureRequests;
     private String pragma;

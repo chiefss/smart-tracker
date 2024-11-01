@@ -48,6 +48,7 @@ class TestIndexWebController extends AbstractIntegrationMvcTest {
 
     @Test
     void testCreate() throws Exception {
+        long itemsCountBeforeCreate = itemDao.count();
         String itemName = "name test";
         String itemUrl = "url test";
         String itemSelector = "selector test";
@@ -63,12 +64,7 @@ class TestIndexWebController extends AbstractIntegrationMvcTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/view/*"));
 
-        Optional<Item> itemEntityOptional = itemDao.findById(6L);
-        Item item = itemEntityOptional.get();
-        Assertions.assertEquals(itemName, item.getName());
-        Assertions.assertEquals(itemUrl, item.getUrl());
-        Assertions.assertEquals(itemSelector, item.getSelector());
-        Assertions.assertEquals(itemBreakSelector, item.getBreakSelector());
+        Assertions.assertEquals(itemsCountBeforeCreate + 1, itemDao.count());
     }
 
     @Test

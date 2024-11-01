@@ -1,4 +1,4 @@
-package org.devel.smarttracker.application.dto;
+package org.devel.smarttracker.application.dto.internal;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ItemDtoView {
+public class ItemViewDto {
 
     private Long id;
     private String name;
@@ -19,15 +19,15 @@ public class ItemDtoView {
     private String host;
     private String selector;
     private String breakSelector;
-    private List<ItemDetailDtoView> values = new ArrayList<>();
+    private List<ItemDetailViewDto> values = new ArrayList<>();
     private String formattedLastValue;
     private Double delta;
     private String formattedDelta;
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
 
-    public ItemDtoView(Long id, String name, String url, String selector, String breakSelector,
-                       List<ItemDetailDtoView> values,
+    public ItemViewDto(Long id, String name, String url, String selector, String breakSelector,
+                       List<ItemDetailViewDto> values,
                        LocalDateTime createdAt, LocalDateTime deletedAt) {
         this.id = id;
         this.name = name;

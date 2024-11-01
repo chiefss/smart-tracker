@@ -1,6 +1,5 @@
 package org.devel.smarttracker.application.repository;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import jakarta.persistence.EntityManager;
 import org.devel.smarttracker.application.entities.Item;
 import org.devel.smarttracker.application.entities.QItem;
@@ -17,14 +16,10 @@ public class ItemDao extends AbstractDao<Item, Long> {
         super(Item.class, entityManager);
     }
 
-    public List<Item> findAllByActivated(boolean activatedOnly) {
-        BooleanExpression where = null;
-        if (activatedOnly) {
-            where = item.deletedAt.isNull();
-        }
+    public List<Item> findAllActivated() {
         return getQuery()
                 .selectFrom(item)
-                .where(where)
+                .where(item.deletedAt.isNull())
                 .orderBy(item.createdAt.asc(), item.name.asc())
                 .fetch();
     }

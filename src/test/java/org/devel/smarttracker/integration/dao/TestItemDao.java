@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 class TestItemDao extends AbstractIntegrationSpringBootTest {
@@ -22,9 +24,17 @@ class TestItemDao extends AbstractIntegrationSpringBootTest {
     @Test
     void testFindById() {
         Optional<Item> itemEntityOptional = itemDao.findById(1L);
+
         Assertions.assertTrue(itemEntityOptional.isPresent());
         Item item = itemEntityOptional.get();
         Assertions.assertEquals(1L, item.getId());
+    }
+
+    @Test
+    void testFindAllActivated() {
+        List<Item> items = itemDao.findAllActivated();
+
+        Assertions.assertTrue(items.stream().allMatch(item -> item.getDeletedAt() == null));
     }
 
     @Test

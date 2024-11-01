@@ -15,4 +15,12 @@ public class Counter {
     public int getCount() {
         return count;
     }
+
+    public boolean isEmpty() {
+        return count == 0;
+    }
+
+    public boolean isNotEmpty() {
+        return !isEmpty();
+    }
 }

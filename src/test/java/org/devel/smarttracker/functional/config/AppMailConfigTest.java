@@ -1,5 +1,6 @@
 package org.devel.smarttracker.functional.config;
 
+import lombok.RequiredArgsConstructor;
 import org.devel.smarttracker.functional.AbstractFunctionalSpringBootTest;
 import org.devel.smarttracker.application.configuration.AppMailConfig;
 import org.junit.jupiter.api.Assertions;
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.test.context.TestPropertySource;
 
 
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @EnableConfigurationProperties(AppMailConfig.class)
 @TestPropertySource(properties = {
         "app.mail.enabled=false",
@@ -29,23 +31,22 @@ import org.springframework.test.context.TestPropertySource;
 })
 class AppMailConfigTest extends AbstractFunctionalSpringBootTest {
 
-    @Autowired
-    private AppMailConfig appMailConfig;
+    private final AppMailConfig appMailConfig;
 
     @Test
     void testConfig() {
         Assertions.assertFalse(appMailConfig.isEnabled());
         Assertions.assertFalse(appMailConfig.isDebug());
-        Assertions.assertNotNull(appMailConfig.getAdmin());
-        Assertions.assertNotNull(appMailConfig.getFrom());
-        Assertions.assertNotNull(appMailConfig.getHost());
-        Assertions.assertNotNull(appMailConfig.getUsername());
-        Assertions.assertNotNull(appMailConfig.getPassword());
-        Assertions.assertNotNull(appMailConfig.getPropertiesTransportProtocol());
-        Assertions.assertTrue(appMailConfig.getPropertiesSmtpPort() > 0);
-        Assertions.assertTrue(appMailConfig.getPropertiesSmtpConnectiontimeout() > 0);
-        Assertions.assertTrue(appMailConfig.getPropertiesSmtpTimeout() > 0);
-        Assertions.assertTrue(appMailConfig.getPropertiesSmtpWritetimeout() > 0);
+        Assertions.assertEquals("admin@example.com", appMailConfig.getAdmin());
+        Assertions.assertEquals("no-reply@example.com", appMailConfig.getFrom());
+        Assertions.assertEquals("smtp.example.com", appMailConfig.getHost());
+        Assertions.assertEquals("user", appMailConfig.getUsername());
+        Assertions.assertEquals("secret", appMailConfig.getPassword());
+        Assertions.assertEquals("smtp", appMailConfig.getPropertiesTransportProtocol());
+        Assertions.assertEquals(587, appMailConfig.getPropertiesSmtpPort());
+        Assertions.assertEquals(5000, appMailConfig.getPropertiesSmtpConnectiontimeout());
+        Assertions.assertEquals(5000, appMailConfig.getPropertiesSmtpTimeout());
+        Assertions.assertEquals(5000, appMailConfig.getPropertiesSmtpWritetimeout());
         Assertions.assertTrue(appMailConfig.isPropertiesSmtpAuth());
         Assertions.assertTrue(appMailConfig.isPropertiesSmtpStarttlsEnable());
         Assertions.assertTrue(appMailConfig.isPropertiesSmtpStarttlsRequired());

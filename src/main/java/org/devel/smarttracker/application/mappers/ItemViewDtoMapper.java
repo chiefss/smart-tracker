@@ -1,16 +1,15 @@
-package org.devel.smarttracker.application.factory;
-
+package org.devel.smarttracker.application.mappers;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.devel.smarttracker.application.dto.ItemDtoView;
+import org.devel.smarttracker.application.dto.internal.ItemViewDto;
 import org.devel.smarttracker.application.entities.Item;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemDtoViewFactory {
+public class ItemViewDtoMapper {
 
-    public static ItemDtoView create(Item item) {
-        return new ItemDtoView(
+    public static ItemViewDto toDto(Item item) {
+        return new ItemViewDto(
                 item.getId(),
                 item.getName(),
                 item.getUrl(),
