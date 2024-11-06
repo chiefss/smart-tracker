@@ -14,7 +14,7 @@
         <Logger name="org.hibernate.orm.jdbc.bind" additivity="false" level="TRACE">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="org.devel.smarttracker" additivity="false" level="debug">
+        <Logger name="org.chiefss.smarttracker" additivity="false" level="debug">
             <AppenderRef ref="Console" />
         </Logger>
     </Loggers>
