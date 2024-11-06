@@ -30,5 +30,4 @@ public class CurrencyUtils {
         }
         throw new IOException("Substring does not contain currency");
     }
-
 }

@@ -69,11 +69,14 @@ class TestItemDetailService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testFindAllItemDetailDtoByItemId() {
+    void testFindAllItemDetailDtoByItemId() throws NotFoundException {
         Long itemId = 1L;
-        ItemDetail itemDetail1 = new ItemDetail(new Item(), 10.0);
-        ItemDetail itemDetail2 = new ItemDetail(new Item(), 20.0);
+        Item item = new Item();
+        item.setId(itemId);
+        ItemDetail itemDetail1 = new ItemDetail(item, 10.0);
+        ItemDetail itemDetail2 = new ItemDetail(item, 20.0);
         List<ItemDetail> itemDetails = Arrays.asList(itemDetail1, itemDetail2);
+        when(itemDao.findById(anyLong())).thenReturn(Optional.of(item));
         when(itemDetailDao.findAllByItemId(itemId, null)).thenReturn(itemDetails);
         try (MockedStatic<CurrencyUtils> currencyUtilsMockedStatic = mockStatic(CurrencyUtils.class)) {
             currencyUtilsMockedStatic.when(() -> CurrencyUtils.formatCurrency(10.0)).thenReturn("10.00");
@@ -89,11 +92,14 @@ class TestItemDetailService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testFindAllItemDetailViewByItemId() {
+    void testFindAllItemDetailViewByItemId() throws NotFoundException {
         Long itemId = 1L;
         Integer limit = 5;
-        ItemDetail itemDetail1 = new ItemDetail(new Item(), 10.0);
-        ItemDetail itemDetail2 = new ItemDetail(new Item(), 20.0);
+        Item item = new Item();
+        item.setId(itemId);
+        when(itemDao.findById(anyLong())).thenReturn(Optional.of(item));
+        ItemDetail itemDetail1 = new ItemDetail(item, 10.0);
+        ItemDetail itemDetail2 = new ItemDetail(item, 20.0);
         List<ItemDetail> itemDetails = Arrays.asList(itemDetail1, itemDetail2);
         when(itemDetailDao.findAllByItemId(itemId, limit)).thenReturn(itemDetails);
         try (MockedStatic<CurrencyUtils> currencyUtilsMockedStatic = mockStatic(CurrencyUtils.class)) {
@@ -110,10 +116,13 @@ class TestItemDetailService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testCleanDetailDuplicates_NoDuplicates() {
+    void testCleanDetailDuplicates_NoDuplicates() throws NotFoundException {
         Long itemId = 1L;
-        ItemDetail detail1 = new ItemDetail(new Item(), 10.0);
-        ItemDetail detail2 = new ItemDetail(new Item(), 20.0);
+        Item item = new Item();
+        item.setId(itemId);
+        when(itemDao.findById(anyLong())).thenReturn(Optional.of(item));
+        ItemDetail detail1 = new ItemDetail(item, 10.0);
+        ItemDetail detail2 = new ItemDetail(item, 20.0);
         List<ItemDetail> itemDetails = Arrays.asList(detail1, detail2);
         when(itemDetailDao.findAllByItemId(itemId, null)).thenReturn(itemDetails);
 
@@ -123,15 +132,21 @@ class TestItemDetailService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testCleanDetailDuplicates_WithDuplicates() {
+    void testCleanDetailDuplicates_WithDuplicates() throws NotFoundException {
         Long itemId = 1L;
-        ItemDetail detail1 = new ItemDetail(new Item(), 10.0);
+        Item item = new Item();
+        item.setId(itemId);
+        when(itemDao.findById(anyLong())).thenReturn(Optional.of(item));
+        ItemDetail detail1 = new ItemDetail(item, 10.0);
         detail1.setId(1L);
-        ItemDetail detail2 = new ItemDetail(new Item(), 10.0);
+        ItemDetail detail2 = new ItemDetail(item, 10.0);
         detail2.setId(2L);
-        ItemDetail detail3 = new ItemDetail(new Item(), 20.0);
+        ItemDetail detail3 = new ItemDetail(item, 20.0);
         detail3.setId(3L);
         List<ItemDetail> itemDetails = Arrays.asList(detail1, detail2, detail3);
+        when(itemDetailDao.findById(1L)).thenReturn(Optional.of(detail1));
+        when(itemDetailDao.findById(2L)).thenReturn(Optional.of(detail2));
+        when(itemDetailDao.findById(3L)).thenReturn(Optional.of(detail3));
         when(itemDetailDao.findAllByItemId(itemId, null)).thenReturn(itemDetails);
 
         itemDetailService.cleanDetailDuplicates(itemId);
@@ -142,15 +157,21 @@ class TestItemDetailService extends AbstractFunctionalTest {
     }
 
     @Test
-    void testCleanDetailDuplicates_AllDuplicates() {
+    void testCleanDetailDuplicates_AllDuplicates() throws NotFoundException {
         Long itemId = 1L;
-        ItemDetail detail1 = new ItemDetail(new Item(), 10.0);
+        Item item = new Item();
+        item.setId(itemId);
+        when(itemDao.findById(anyLong())).thenReturn(Optional.of(item));
+        ItemDetail detail1 = new ItemDetail(item, 10.0);
         detail1.setId(1L);
-        ItemDetail detail2 = new ItemDetail(new Item(), 10.0);
+        ItemDetail detail2 = new ItemDetail(item, 10.0);
         detail2.setId(2L);
-        ItemDetail detail3 = new ItemDetail(new Item(), 10.0);
+        ItemDetail detail3 = new ItemDetail(item, 10.0);
         detail3.setId(3L);
         List<ItemDetail> itemDetails = Arrays.asList(detail1, detail2, detail3);
+        when(itemDetailDao.findById(1L)).thenReturn(Optional.of(detail1));
+        when(itemDetailDao.findById(2L)).thenReturn(Optional.of(detail2));
+        when(itemDetailDao.findById(3L)).thenReturn(Optional.of(detail3));
         when(itemDetailDao.findAllByItemId(itemId, null)).thenReturn(itemDetails);
 
         itemDetailService.cleanDetailDuplicates(itemId);

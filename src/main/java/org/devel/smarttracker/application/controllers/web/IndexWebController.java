@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.devel.smarttracker.application.dto.ItemCreateDto;
 import org.devel.smarttracker.application.dto.ItemUpdateDto;
 import org.devel.smarttracker.application.entities.Item;
+import org.devel.smarttracker.application.exceptions.ObjectNotFoundException;
 import org.devel.smarttracker.application.mappers.ItemCreateDtoMapper;
 import org.devel.smarttracker.application.mappers.ItemUpdateDtoMapper;
 import org.devel.smarttracker.application.services.ItemDetailParserService;
@@ -33,11 +34,15 @@ public class IndexWebController {
         return "index";
     }
 
-    @GetMapping("/view/{id}")
-    public String viewById(Model model, @PathVariable Long id) throws NotFoundException {
-        model.addAttribute("item", itemService.findByIdItemView(id));
-        model.addAttribute("itemDetails", itemDetailService.findAllItemDetailViewByItemId(id, Defines.ITEM_DETAIL_VALUE_LIMIT));
-        model.addAttribute("items", itemService.findItemViewDtoAll());
+    @GetMapping("/view/{itemId}")
+    public String viewById(Model model, @PathVariable Long itemId) {
+        try {
+            model.addAttribute("item", itemService.findByIdItemView(itemId));
+            model.addAttribute("itemDetails", itemDetailService.findAllItemDetailViewByItemId(itemId, Defines.ITEM_DETAIL_VALUE_LIMIT));
+            model.addAttribute("items", itemService.findItemViewDtoAll());
+        } catch (NotFoundException e) {
+            throw new ObjectNotFoundException(e);
+        }
         return "index";
     }
 
@@ -71,36 +76,44 @@ public class IndexWebController {
         return redirectToRoot();
     }
 
-    @PostMapping("/activate/{id}")
-    public String activateItem(@PathVariable Long id) throws NotFoundException {
-        itemService.activate(id);
+    @PostMapping("/activate/{itemId}")
+    public String activateItem(@PathVariable Long itemId) throws NotFoundException {
+        itemService.activate(itemId);
         return redirectToRoot();
     }
 
-    @PostMapping("/deactivate/{id}")
-    public String deactivateItem(@PathVariable Long id) throws NotFoundException {
-        itemService.deactivate(id);
+    @PostMapping("/deactivate/{itemId}")
+    public String deactivateItem(@PathVariable Long itemId) throws NotFoundException {
+        itemService.deactivate(itemId);
         return redirectToRoot();
     }
 
-    @GetMapping("/detail/clean/{id}")
-    public String cleanDetailAllByItemId(@PathVariable Long id) {
-        itemDetailService.cleanDetailDuplicates(id);
-        return String.format("redirect:/view/%d", id);
+    @GetMapping("/detail/clean/{itemId}")
+    public String cleanDetailAllByItemId(@PathVariable Long itemId) {
+        try {
+            itemDetailService.cleanDetailDuplicates(itemId);
+        } catch (NotFoundException e) {
+            throw new ObjectNotFoundException(e);
+        }
+        return String.format("redirect:/view/%d", itemId);
     }
 
     @GetMapping("/detail/cleanall")
     public String cleanItemDetailAll() {
         List<Item> items = itemService.findAll();
-        for (Item item : items) {
-            itemDetailService.cleanDetailDuplicates(item.getId());
+        try {
+            for (Item item : items) {
+                itemDetailService.cleanDetailDuplicates(item.getId());
+            }
+        } catch (NotFoundException e) {
+            throw new ObjectNotFoundException(e);
         }
         return redirectToRoot();
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteItem(@PathVariable Long id) throws NotFoundException {
-        itemService.delete(id);
+    @PostMapping("/delete/{itemId}")
+    public String deleteItem(@PathVariable Long itemId) throws NotFoundException {
+        itemService.delete(itemId);
         return redirectToRoot();
     }
 

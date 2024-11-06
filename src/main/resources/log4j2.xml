@@ -21,17 +21,17 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="org.hibernate.orm.jdbc.bind" additivity="false" level="TRACE">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
-        </Logger>
-        <Logger name="org.devel.smarttracker.SmartTrackerApplication" additivity="false" level="info">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
-        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile" />
         </Root>
+        <Logger name="org.hibernate.orm.jdbc.bind" additivity="false" level="TRACE">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+        <Logger name="org.devel.smarttracker" additivity="false" level="info">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
     </Loggers>
 </Configuration>

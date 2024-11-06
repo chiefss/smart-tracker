@@ -177,7 +177,7 @@
 
         let itemDetailElement = document.querySelector("#item-detail");
         if (itemDetailElement != null) {
-            let detailUrl = "/api/detail/" + itemDetailElement.getAttribute("data-id");
+            let detailUrl = "/api/item-detail/" + itemDetailElement.getAttribute("data-id");
             let responsePromise = fetch(detailUrl)
                 .then(value => value.json());
             responsePromise.then(value => {

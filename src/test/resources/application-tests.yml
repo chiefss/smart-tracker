@@ -1,6 +1,4 @@
 spring:
-  config:
-    name: application-tests
   jpa:
     show-sql: true
   datasource:

@@ -1,90 +1,77 @@
 package org.devel.smarttracker.application.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.devel.smarttracker.application.exceptions.ObjectNotFoundException;
+import org.devel.smarttracker.application.notifications.messages.AccessDeniedMailMessage;
+import org.devel.smarttracker.application.notifications.messages.InternalServerErrorMailMessage;
 import org.devel.smarttracker.application.services.MailService;
 import org.devel.smarttracker.application.utils.Defines;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.Arrays;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
 @ControllerAdvice
+@RequiredArgsConstructor
 public class AdviceController {
 
     private final MailService mailService;
 
-    @Autowired
-    public AdviceController(MailService mailService) {
-        this.mailService = mailService;
-    }
-
     @ExceptionHandler(value = {AccessDeniedException.class})
-    public String commence(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) {
-        // 403
-        log.warn(String.format("Access to resource is forbidden (403) for request: \"%s\" \"%s\" error message: \"%s\"",
-                request.getMethod(), request.getRequestURL(), accessDeniedException.getMessage()));
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handle(HttpServletRequest request, AccessDeniedException accessDeniedException) {
+        log.warn("Access denied (403) for request: \"{}\" \"{}\" error message: \"{}\"",
+                request.getMethod(), request.getRequestURL(), accessDeniedException.getMessage());
 
-        mailService.sendAdmin(String.format("[%s] Access to resource is forbidden (403) for request", request.getServerName()),
-                String.format("[%s]\n\nAccess to resource is forbidden (403) for request: \"%s\" \"%s?%s\"" +
-                                "\n\nerror message: \"%s\"\n\nTrace:\n\n%s",
-                        request.getServerName(), request.getMethod(), request.getRequestURL(), request.getQueryString() != null ? request.getQueryString() : "",
-                        accessDeniedException.getMessage(), Arrays.toString(accessDeniedException.getStackTrace())));
+        AccessDeniedMailMessage accessDeniedMailMessage = new AccessDeniedMailMessage();
+        mailService.sendAdmin(accessDeniedMailMessage.getSubject(request), accessDeniedMailMessage.getBody(request, accessDeniedException));
 
-        String requestUri = request.getRequestURI();
-        if (requestUri.startsWith(Defines.API_PREFIX)) {
-            setResponseStatus(response, HttpServletResponse.SC_FORBIDDEN);
-            return Defines.API_ERROR_TEMPLATE_NAME;
-        } else {
-            setResponseStatus(response, HttpServletResponse.SC_NOT_FOUND);
-            return Defines.WEB_ERROR_TEMPLATE_NAME;
-        }
+        return new ModelAndView(Defines.WEB_ERROR_TEMPLATE_NAME);
     }
 
-    @ExceptionHandler(value = {NotFoundException.class})
-    public String commence(HttpServletRequest request, HttpServletResponse response, NotFoundException notFoundException) {
-        // 404
-        log.debug(String.format("Object was not found (404) for request: \"%s\" \"%s\" error message: \"%s\"",
-                request.getMethod(), request.getRequestURL(), notFoundException.getMessage()));
+    @ExceptionHandler(value = {ObjectNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handle(HttpServletRequest request, ObjectNotFoundException notFoundException) {
+        log.debug("Object not found (404) for request: \"{}\" \"{}\" error message: \"{}\"",
+                request.getMethod(), request.getRequestURL(), notFoundException.getMessage());
 
-        String requestUri = request.getRequestURI();
-        if (requestUri.startsWith(Defines.API_PREFIX)) {
-            setResponseStatus(response, HttpServletResponse.SC_NOT_FOUND);
-            return Defines.API_ERROR_TEMPLATE_NAME;
-        } else {
-            setResponseStatus(response, HttpServletResponse.SC_NOT_FOUND);
-            return Defines.WEB_ERROR_TEMPLATE_NAME;
-        }
+        return new ModelAndView(Defines.WEB_ERROR_TEMPLATE_NAME);
+    }
+
+    @ExceptionHandler(value = {NoHandlerFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handle(HttpServletRequest request, NoHandlerFoundException notFoundException) {
+        log.debug("Endpoint not found (404) for request: \"{}\" \"{}\" error message: \"{}\"",
+                request.getMethod(), request.getRequestURL(), notFoundException.getMessage());
+
+        return new ModelAndView(Defines.WEB_ERROR_TEMPLATE_NAME);
+    }
+
+    @ExceptionHandler(value = {NoResourceFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handle(HttpServletRequest request, NoResourceFoundException notFoundException) {
+        log.debug("Resource not found (404) for request: \"{}\" \"{}\" error message: \"{}\"",
+                request.getMethod(), request.getRequestURL(), notFoundException.getMessage());
+
+        return new ModelAndView(Defines.WEB_ERROR_TEMPLATE_NAME);
     }
 
     @ExceptionHandler(value = {Exception.class})
-    public String commence(HttpServletRequest request, HttpServletResponse response, Exception exception) {
-        // 500
-        log.error(String.format("An error (500) occurred during request: \"%s\" \"%s\" error message: \"%s\"",
-                request.getMethod(), request.getRequestURL(), exception.getMessage()));
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handle(HttpServletRequest request, Exception exception) {
+        log.error("An error (500) occurred for request: \"{}\" \"{}\" error message: \"{}\"",
+                request.getMethod(), request.getRequestURL(), exception.getMessage());
 
-        mailService.sendAdmin(String.format("[%s] An error (500) occurred during request", request.getServerName()),
-                String.format("[%s]\n\nAn error (500) occurred during request: \"%s\" \"%s?%s\"" +
-                                "\n\nerror message: \"%s\"\n\nTrace:\n\n%s",
-                        request.getServerName(), request.getMethod(), request.getRequestURL(), request.getQueryString() != null ? request.getQueryString() : "",
-                        exception.getMessage(), Arrays.toString(exception.getStackTrace())));
+        InternalServerErrorMailMessage internalServerErrorMailMessage = new InternalServerErrorMailMessage();
+        mailService.sendAdmin(internalServerErrorMailMessage.getSubject(request), internalServerErrorMailMessage.getBody(request, exception));
 
-        String requestUri = request.getRequestURI();
-        if (requestUri.startsWith(Defines.API_PREFIX)) {
-            setResponseStatus(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return Defines.API_ERROR_TEMPLATE_NAME;
-        } else {
-            setResponseStatus(response, HttpServletResponse.SC_NOT_FOUND);
-            return Defines.WEB_ERROR_TEMPLATE_NAME;
-        }
-    }
-
-    private void setResponseStatus(HttpServletResponse response, int status){
-        response.setStatus(status);
+        return new ModelAndView(Defines.WEB_ERROR_TEMPLATE_NAME);
     }
 }

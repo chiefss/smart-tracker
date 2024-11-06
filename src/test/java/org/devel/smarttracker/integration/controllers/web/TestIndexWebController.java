@@ -7,7 +7,6 @@ import org.devel.smarttracker.application.repository.ItemDao;
 import org.devel.smarttracker.application.repository.ItemDetailDao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -21,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WithMockUser(username = "user")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestIndexWebController extends AbstractIntegrationMvcTest {
 
     private final ItemDao itemDao;
@@ -38,6 +36,18 @@ class TestIndexWebController extends AbstractIntegrationMvcTest {
     void testIndex() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testNotFound() throws Exception {
+        mockMvc.perform(get("/not-found"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testStaticNotFound() throws Exception {
+        mockMvc.perform(get("/static/not-found"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
