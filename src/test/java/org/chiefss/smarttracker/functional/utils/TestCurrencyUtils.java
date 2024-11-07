@@ -11,7 +11,7 @@ class TestCurrencyUtils extends AbstractFunctionalTest {
 
     @Test
     void testFormatCurrency() {
-        String currency = CurrencyUtils.formatCurrency(123456.789f);
+        String currency = CurrencyUtils.formatCurrency(123456.789);
         Assertions.assertEquals("123 456,79", currency);
     }
 
