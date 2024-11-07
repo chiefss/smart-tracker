@@ -14,6 +14,7 @@ public class CurrencyUtils {
     public static String formatCurrency(double currency) {
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
         symbols.setGroupingSeparator(' ');
+        symbols.setDecimalSeparator(',');
         DecimalFormat formatter = new DecimalFormat("###,###.##", symbols);
         return formatter.format(currency);
     }
