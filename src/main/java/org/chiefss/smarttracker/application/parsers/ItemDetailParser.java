@@ -3,6 +3,7 @@ package org.chiefss.smarttracker.application.parsers;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.util.Strings;
 import org.chiefss.smarttracker.application.configuration.AppParserConnectionHeadersConfig;
 import org.chiefss.smarttracker.application.dto.ItemDetailParserResultDto;
 import org.chiefss.smarttracker.application.entities.Item;
@@ -111,6 +112,7 @@ public class ItemDetailParser {
                 return itemDetailValueOptional.get();
             }
         }
+        log.debug(String.format("Item detail value element not found by selectors \"%s\"%nResponse body:%n%s", selectors, document.body().html()));
         throw new NotFoundException(String.format("Item detail value element not found by selectors \"%s\"", selectors));
     }
 
@@ -146,10 +148,9 @@ public class ItemDetailParser {
     }
 
     private Connection getConnection(URL url) {
-        return Jsoup
+        Connection connection = Jsoup
                 .connect(url.toString())
                 .header("Host", url.getHost())
-                .header("User-Agent", appParserConnectionHeadersConfig.getUserAgent())
                 .header("Accept", appParserConnectionHeadersConfig.getAccept())
                 .header("Accept-Language", appParserConnectionHeadersConfig.getAcceptLanguage())
                 .header("Accept-Encoding", appParserConnectionHeadersConfig.getAcceptEncoding())
@@ -157,7 +158,12 @@ public class ItemDetailParser {
                 .header("Connection", appParserConnectionHeadersConfig.getConnection())
                 .header("Upgrade-Insecure-Requests", appParserConnectionHeadersConfig.getUpgradeInsecureRequests())
                 .header("Pragma", appParserConnectionHeadersConfig.getPragma())
-                .header("Cache-Control", appParserConnectionHeadersConfig.getCacheControl());
+                .header("Cache-Control", appParserConnectionHeadersConfig.getCacheControl())
+                .followRedirects(true);
+        if (Strings.isNotBlank(appParserConnectionHeadersConfig.getUserAgent())) {
+            connection.userAgent(appParserConnectionHeadersConfig.getUserAgent());
+        }
+        return connection;
     }
 
     private Callable<Optional<ItemDetailParserResultDto>> createParserTask(Item item) {
